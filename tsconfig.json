@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+      "jsx": "react",
       "target": "es5",   // Adjust target JavaScript version if needed
       "module": "commonjs", // Use the CommonJS module system
       "outDir": "dist",    // Output compiled JavaScript to the "dist" folder
