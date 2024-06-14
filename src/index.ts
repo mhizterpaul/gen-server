@@ -5,8 +5,13 @@
 import express, { Express, Request, Response } from "express";
 import session from 'express-session'
 import passport from 'passport'
+import {renderToString} from 'react-dom/server'
 import {Strategy as LocalStrategy} from 'passport-local'
+import App from './views/App'
+import dotenv from 'dotenv'
+import mongoose from "mongoose";
 
+dotenv.config();
 
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
@@ -14,6 +19,8 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 const store = new session.MemoryStore();
+const dbInit = async () => await mongoose.connect(process.env.MONGO_URI as string);
+
 
 app.use(session({
   secret: "secret",
@@ -44,8 +51,18 @@ passport.use(new LocalStrategy((username, password, done) => {
   }
 }));
 
-//import routes from routes and use app.router
 
-app.listen(PORT, () => {
-  console.log(`Server is listening on port ${PORT}`);
+app.get(
+  '/', (req: Request, res: Response) => {
+    const html = renderToString(< App />);
+    res.status(200).send(html)
+  }
+)
+
+dbInit().then(() => 
+  app.listen(PORT, () => {
+    console.log(`Server is listening on port ${PORT}`);
+  })
+).catch((error) => {
+  console.error(error)
 });

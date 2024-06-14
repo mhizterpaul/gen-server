@@ -1,6 +1,7 @@
 type Schema = {
     [key: string] : string | Schema
 }
+
 const validTypes = ['String', 'Number', 'Date', 'Buffer', 'Boolean', 'Mixed', 'ObjectId', 'Array', 'Decimal128', 'Map', 'UUID'];
 
 const validateDB = (db : string) => {

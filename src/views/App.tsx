@@ -30,3 +30,5 @@ const App = ()=> {
       return <div>Please log in.</div>;
     }
 }
+
+export default App
