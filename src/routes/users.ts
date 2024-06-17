@@ -1,40 +1,10 @@
 import express, {Router, Request, Response, NextFunction} from 'express'
-import {User as UserType} from '../types/user'
+import validateParams from '../middleware/validateParams'
+import User from '../models/user.model'
+
+
 
 const router = Router();
-
-import mongoose, {Schema} from 'mongoose'
-
-const user = new Schema({
-    firstName: String,
-    lastName: String,
-    email: String,
-    password: String,
-    role: String
-})
-
-const User = mongoose.model('User', user)
-
-const validateParams = (req: Request, res: Response, next: NextFunction) => {
-    const {firstName, lastName, email, password, role } = req.body;
-    const user: UserType = {firstName, lastName, email, password, role}
-    const test = {
-        firstName: /^[a-zA-Z]{4,}$/,
-        lastName: /^[a-zA-Z]{4,}$/,
-        email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-        password: /^[a-zA-Z0-9]{8,}$/,
-        role: /^(admin|writer|manager)$/
-
-    }
-
-    for (let key in user) {
-        if(!test[key].test(user[key])) req.valid = false;
-    }else{
-        req.valid = true;
-    }
-
-    next()
-}
 
 const findUser = (req: Request, res: Response, next: NextFunction)=> {
     User.find({email: req.body.email}, (err, data) => {
