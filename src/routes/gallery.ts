@@ -3,11 +3,12 @@ import { GridFsStorage } from 'multer-gridfs-storage';
 import multer from 'multer'
 import GridFs from 'gridfs-stream';
 import mongoose from 'mongoose';
+import makeTempFile from '../utils/makeTempFile';
 
 const router = Router();
 
 const photosStorage = new GridFsStorage({ 
-    process.env.MONGO_URI + "/gallery",
+    url: process.env.MONGO_URI + "/gallery",
     options: { useNewUrlParser: true, useUnifiedTopology: true },
     file: (req, file) => {
       return {
@@ -17,15 +18,14 @@ const photosStorage = new GridFsStorage({
     }
 
 });
-
-const videosStorage = new GridFsStorage({ 
-    process.env.MONGO_URI + "/gallery",
+const videosStorage = new GridFsStorage({
+    url: process.env.MONGO_URI + "/gallery",
     options: { useNewUrlParser: true, useUnifiedTopology: true },
     file: (req, file) => {
-      return {
-        bucketName: 'videos',       // Setting bucketName to 'photos'
-        filename: file.originalname // The name of the file as in the user's machine
-      }
+        return {
+            bucketName: 'videos',
+            filename: file.originalname
+        }
     }
 
 });
@@ -52,32 +52,97 @@ router.post('/upload/videos', uploadVideos.array('videos', 12), (req: Request, r
 })
 
 router.get('/images', async (req: Request, res: Response)=> {
-    const videos = await gfs.files.find({ bucketName: 'videos' }).toArray();
-    return videos; // Return an array of video objects
+    const photos = await gfs.files.find({ bucketName: 'photos' }).toArray();
+    const paths = [];
+    for(const photo of photos) {
+        try{
+            paths.push(await makeTempFile(photo, gfs));
+        }catch(e){
+            console.error('Error making temporary file:', e);
+        }
+    }
+    res.status(200).send(paths);
 })
 
 router.get('/images/:id', async(req: Request, res: Response)=> {
-    const video = await gfs.files.findOne({ name: req.params.id });
-    return video; // Return the video object
+    const file = await gfs.files.findOne({ name: req.params.id });
+    if (!file) {
+        return res.status(404).send({ message: 'File not found' });
+    }
+
+    try{
+        const tempFilePath = await makeTempFile(file, gfs);
+        res.status(200).sendFile(tempFilePath);
+
+    }catch(e){
+        res.status(500).send({message: 'internal server error'})
+    }
+    
 
 })
 
 
 router.get('/videos', async (req: Request, res: Response)=> {
     const videos = await gfs.files.find({ bucketName: 'videos' }).toArray();
-    return videos; // Return an array of video objects
+    const paths = [];
+    for(const video of videos) {
+        try{
+            paths.push(await makeTempFile(video, gfs));
+        }catch(e){
+            console.error('Error making temporary file:', e);
+        }
+    }
+    res.status(200).send(paths);
 })
 
 router.get('/videos/:id', async(req: Request, res: Response)=> {
-    const video = await gfs.files.findOne({ name: req.params.id });
-    return video; // Return the video object
+    const file = await gfs.files.findOne({ name: req.params.id });
+    if (!file) {
+        return res.status(404).send({ message: 'File not found' });
+    }
+
+    try{
+        const tempFilePath = await makeTempFile(file, gfs);
+        res.status(200).sendFile(tempFilePath);
+        
+    }catch(e){
+        res.status(500).send({message: 'internal server error'})
+    }
 
 })
 
 router.delete('/videos', (req, res)=> {
+    req.body.forEach(async (videoName) => {
+        const video = await gfs.files.findOne({ name: videoName });
+        if (!video) {
+            return res.status(404).send({ message: 'File not found' });
+        }
+        gfs.remove({ _id: video._id }, (err) => {
+            if (err) {
+                console.error('Error deleting file:', err);
+            } else {
+                console.log('File deleted successfully');
+            }
+        });
+    })
 
 })
 router.delete('/photos', (req, res) => {
     //takes an array of names  to delete
+    req.body.forEach(async (videoName) => {
+        const video = await gfs.files.findOne({ name: videoName });
+        if (!video) {
+            return res.status(404).send({ message: 'File not found' });
+        }
+        gfs.remove({ _id: video._id }, (err) => {
+            if (err) {
+                console.error('Error deleting file:', err);
+            } else {
+                console.log('File deleted successfully');
+            }
+        });
+    })
 })
 export default router;
+
+
