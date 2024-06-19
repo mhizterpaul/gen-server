@@ -9,7 +9,6 @@ import {renderToString} from 'react-dom/server'
 import {Strategy as LocalStrategy} from 'passport-local'
 import App from './views/App'
 import dotenv from 'dotenv'
-import mongoose from "mongoose";
 
 dotenv.config();
 
@@ -19,8 +18,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 const store = new session.MemoryStore();
-const dbInit = async () => await mongoose.connect(process.env.MONGO_URI as string);
-
+export {app as App};
 
 app.use(session({
   secret: "secret",
@@ -59,10 +57,7 @@ app.get(
   }
 )
 
-dbInit().then(() => 
+
   app.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}`);
   })
-).catch((error) => {
-  console.error(error)
-});
