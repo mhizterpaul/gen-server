@@ -2,6 +2,7 @@ import {Router, Request, Response} from 'express'
 import multer from 'multer'
 import fs from 'fs'
 import AdmZip from 'adm-zip'
+import theme from '../controllers/themes.controller'
 
 
 const router = Router();
@@ -10,6 +11,7 @@ const storage = multer.diskStorage({
 })
 
 const upload = multer({ storage })
+
 
 router.post('/themes', upload.single('theme'), (req: Request, res: Response)=> {
     try{
@@ -47,6 +49,11 @@ router.delete('/themes/:id', (res: Response, req: Request)=>{
         }
         res.status(200).json({message: 'Theme deleted successfully'})
     })
+})
+
+router.delete('/theme/current', (req: Request, res: Response)=>{
+    theme.unload();
+    res.send('Theme unloaded successfully');
 })
 
 export default router;

@@ -5,10 +5,7 @@ import mongoose from "mongoose";
 
 const connectionString = process.env.MONGO_URI + "/gallery"; // Replace with your details
 
-mongoose.connect(connectionString, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
+mongoose.connect(connectionString)
 .then(() => {
   console.log('MongoDB database connected successfully!');
 

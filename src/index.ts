@@ -7,8 +7,11 @@ import session from 'express-session'
 import passport from 'passport'
 import {renderToString} from 'react-dom/server'
 import {Strategy as LocalStrategy} from 'passport-local'
-import App from './views/App'
 import dotenv from 'dotenv'
+import User from 'models/user.model'
+import React from 'react';
+import ReactDOMServer from 'react-dom/server';
+import App from 'views/main'
 
 dotenv.config();
 
@@ -31,11 +34,12 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+
 passport.serializeUser((user, done) => done(null, user.id));
 
 passport.deserializeUser((id, done) => {
   // Look up user id in database. 
-  db.users.findById(id, function (err, user) {
+  User.findById(id, function (err, user) {
     if (err) return done(err); 
     done(null, user);
   });
@@ -52,10 +56,10 @@ passport.use(new LocalStrategy((username, password, done) => {
 
 app.get(
   '/', (req: Request, res: Response) => {
-    const html = renderToString(< App />);
+
+    const html = ``;
     res.status(200).send(html)
-  }
-)
+  })
 
 
   app.listen(PORT, () => {
