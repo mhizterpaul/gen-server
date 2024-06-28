@@ -5,13 +5,10 @@
 import express, { Express, Request, Response } from "express";
 import session from 'express-session'
 import passport from 'passport'
-import {renderToString} from 'react-dom/server'
 import {Strategy as LocalStrategy} from 'passport-local'
 import dotenv from 'dotenv'
-import User from 'models/user.model'
-import React from 'react';
-import ReactDOMServer from 'react-dom/server';
-import App from 'views/main'
+import User from './models/user.model'
+
 
 dotenv.config();
 
@@ -57,7 +54,6 @@ passport.use(new LocalStrategy((username, password, done) => {
 app.get(
   '/', (req: Request, res: Response) => {
 
-    const html = ``;
     res.status(200).send(html)
   })
 

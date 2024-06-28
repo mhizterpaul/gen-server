@@ -3,31 +3,30 @@
 //also check if you is what user is authorized as 
 //disable all functions that user isn't authorized
 
-import React, {Suspense, lazy} from 'react'
-
-
-const OtherComponent = React.lazy(() => import('./OtherComponent'));
+import React, {useEffect, useState} from 'react'
+import axios from 'axios'
 
 const App = ()=> {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(null);
 
     useEffect(() => {
-      const checkLogin = async () => {
+      const getStatus = async () => {
         try {
-          await axios.get('http://localhost:5000/token', { withCredentials: true });
-          setIsLoggedIn(true);
+          const status = await axios.get(process.env.ENDPOINT+"/login/isAuthenticated");
+          setIsLoggedIn(status)
         } catch (e) {
-          setIsLoggedIn(false);
+          //check cause or error
+          //try again is necessary;
+          //display error widget if error is untractable
         }
       };
   
-      checkLogin();
     }, []);
   
     if (isLoggedIn) {
-      return <div>Welcome back!</div>;
+      return <Dashboard />;
     } else {
-      return <div>Please log in.</div>;
+      return <LogIn />;
     }
 }
 

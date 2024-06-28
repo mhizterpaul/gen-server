@@ -1,4 +1,9 @@
 {
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
   "dependencies": {
     "@types/express": "^4.17.21",
     "adm-zip": "^0.5.14",

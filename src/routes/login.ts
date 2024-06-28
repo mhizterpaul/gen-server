@@ -1,7 +1,6 @@
 import express, {Request, Response} from 'express'
 import passport from 'passport'
-import {renderToString} from 'react-dom/server'
-import Login from '../views/pages/Login'
+
 
 const router = express.Router()
 
@@ -13,6 +12,16 @@ router.post(
       res.redirect("/dashboard");
     }
   );
+
+router.get(
+  '/isAuthenticated', (req: Request, res: Response) => {
+    res.send(req.isAuthenticated());
+  })
+
+router.get(
+  '/user', (req:Request, res:Response)=>{
+    res.send(req.user)
+  })
 
 
 export default router;

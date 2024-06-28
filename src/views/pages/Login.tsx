@@ -2,6 +2,7 @@ import { Formik } from 'formik';
 import React from 'react'
 import axios from 'axios'
 
+//use zod to validate
 type Values = {
     username: string,
     password: string
@@ -21,7 +22,7 @@ const Login = ()=> {
          return errors;
         }, 
         onSubmit = (values : Values, { setSubmitting }) => {
-         axios.post('http://localhost:5000/login', values, { withCredentials: true })
+         axios.post(process.env.ENDPOINT+'/login', values, { withCredentials: true })
          .then((res) => {
             setSubmitting(false)
          });
